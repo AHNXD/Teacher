@@ -1,8 +1,8 @@
 import os
 import cv2
 import sqlite3
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
 
 # Replace with your bot token
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -40,44 +40,48 @@ def init_db():
 # Initialize the database
 init_db()
 
+# Function to create an inline keyboard with a "Show Links" button
+def create_links_keyboard():
+    keyboard = [
+        [InlineKeyboardButton("Show Links", callback_data="show_links")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
-# Command to show links to students
+# Command to start the bot
 async def start(update: Update, context: CallbackContext):
+    # Send a welcome message with the "Show Links" button
+    reply_markup = create_links_keyboard()
+    await update.message.reply_text(
+        "Welcome! Use the button below to show the links.",
+        reply_markup=reply_markup
+    )
+
+    # Ask the user to provide their phone number
+    await update.message.reply_text("Please send your phone number in the format 09xxxxxxxx.")
+
+# Callback query handler for the "Show Links" button
+async def show_links_callback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    await query.answer()  # Acknowledge the callback query
+
     conn = sqlite3.connect('bot_data.db')
     cursor = conn.cursor()
     
+    # Fetch links from the database
     cursor.execute('SELECT name, url FROM social_links')
     links = cursor.fetchall()
     
+    # Create inline buttons for each link
     keyboard = [
         [InlineKeyboardButton(link[0], url=link[1])] for link in links
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Here are the links:", reply_markup=reply_markup)
-
-    # Ask the user to provide their phone number
-    await update.message.reply_text("Please send your phone number in the format 09xxxxxxxx.")
+    
+    # Send the links to the user
+    await query.edit_message_text("Here are the links:", reply_markup=reply_markup)
     
     conn.close()
-    
-# Command to show links to students
-async def show_links(update: Update, context: CallbackContext):
-    conn = sqlite3.connect('bot_data.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('SELECT name, url FROM social_links')
-    links = cursor.fetchall()
-    
-    keyboard = [
-        [InlineKeyboardButton(link[0], url=link[1])] for link in links
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Here are the links:", reply_markup=reply_markup)
 
-    # Ask the user to provide their phone number
-    await update.message.reply_text("Please send your phone number in the format 09xxxxxxxx.")
-    
-    conn.close()
 
 # Handle phone number input from users
 async def handle_phone_number(update: Update, context: CallbackContext):
@@ -147,7 +151,7 @@ def main():
 
     # Add handlers
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("Show Links", show_links))
+    application.add_handler(CallbackQueryHandler(show_links_callback, pattern="^show_links$"))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_phone_number))
     application.add_handler(MessageHandler(filters.PHOTO, handle_qr_code))
 

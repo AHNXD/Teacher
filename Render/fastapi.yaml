@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: fastapi-service
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: BOT_TOKEN
+        value: YOUR_BOT_TOKEN
+      - key: URL
+        value: https://fastapi-service.onrender.com

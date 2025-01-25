@@ -1,3 +1,2 @@
 python-telegram-bot
 opencv-python
-opencv-python

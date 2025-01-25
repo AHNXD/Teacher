@@ -1,6 +1,6 @@
 python-telegram-bot[webhooks]
 opencv-python
-sqlite3
+db-sqlite3
 fastapi
 uvicorn
 pydantic

@@ -1,6 +1,5 @@
 import os
 import cv2
-from pyzbar import pyzbar
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 

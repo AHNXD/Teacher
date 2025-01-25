@@ -94,7 +94,7 @@ def main():
         listen="0.0.0.0",  # Bind to all available interfaces
         port=8080,         # Use port 8080
         url_path="",       # No URL path
-        webhook_url="https://your-render-url.onrender.com"  # Replace with your Render URL
+        webhook_url="https://teacher-qhw2.onrender.com"  # Replace with your Render URL
     )
 
 if __name__ == "__main__":

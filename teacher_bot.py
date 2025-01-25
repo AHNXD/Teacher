@@ -4,7 +4,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
 # Replace with your bot token
-BOT_TOKEN = "7689649103:AAEkOak9caU-obULdGqU0DTmkQZhNuZIRis"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Database to store phone numbers and chat IDs
 user_db = {}
@@ -89,8 +89,13 @@ def main():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_phone_number))
     application.add_handler(MessageHandler(filters.PHOTO, handle_qr_code))
 
-    # Start the bot
-    application.run_polling()
+    # Set up webhook
+    application.run_webhook(
+        listen="0.0.0.0",  # Bind to all available interfaces
+        port=8080,         # Use port 8080
+        url_path="",       # No URL path
+        webhook_url="https://your-render-url.onrender.com"  # Replace with your Render URL
+    )
 
 if __name__ == "__main__":
     main()

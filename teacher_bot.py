@@ -42,12 +42,17 @@ async def handle_phone_number(update: Update, context: CallbackContext):
         await update.message.reply_text("Invalid phone number format. Please send your phone number in the format +1234567890.")
 
 # Function to decode QR code
+# def decode_qr_code(image_path):
+#     image = cv2.imread(image_path)
+#     decoded_objects = pyzbar.decode(image)
+#     for obj in decoded_objects:
+#         return obj.data.decode("utf-8")
+#     return None
 def decode_qr_code(image_path):
-    image = cv2.imread(image_path)
-    decoded_objects = pyzbar.decode(image)
-    for obj in decoded_objects:
-        return obj.data.decode("utf-8")
-    return None
+    img = cv2.imread(image_path)
+    detector = cv2.QRCodeDetector()
+    data, _, _ = detector.detectAndDecode(img)
+    return data
 
 # Handle QR code images sent by admin
 async def handle_qr_code(update: Update, context: CallbackContext):

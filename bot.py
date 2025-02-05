@@ -163,5 +163,5 @@ def main():
         webhook_url= os.getenv("URL")  # Replace with your Render URL
     )
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

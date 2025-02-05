@@ -20,6 +20,10 @@ class UserCreate(BaseModel):
 # Initialize FastAPI app
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello, this is the combined API and bot service!"}
+
 # Database connection helper function
 def get_db_connection():
     conn = sqlite3.connect('bot_data.db')
@@ -73,6 +77,28 @@ def add_user(user: UserCreate):
         conn.close()
     
     return {"message": f"User {user.phone_number} added successfully"}
+
+# Endpoint to get all users
+@app.get("/users/")
+def get_users():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Fetch all users from the database
+        cursor.execute('SELECT phone_number, chat_id FROM users')
+        users = cursor.fetchall()
+        
+        # Convert the result into a list of dictionaries
+        users_list = [{"phone_number": user[0], "chat_id": user[1]} for user in users]
+        
+        return users_list
+    except Exception as e:
+        # Handle unexpected errors
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    finally:
+        # Close the database connection
+        conn.close()
 
 def run_fastapi():
     uvicorn.run(app, host="0.0.0.0", port=8000)

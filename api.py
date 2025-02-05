@@ -1,6 +1,9 @@
 from fastapi import FastAPI, HTTPException
+import threading
 import sqlite3
+import uvicorn
 from pydantic import BaseModel
+from bot import main as run_bot
 
 # Define Pydantic models for request bodies
 class AdminCreate(BaseModel):
@@ -71,7 +74,14 @@ def add_user(user: UserCreate):
     
     return {"message": f"User {user.phone_number} added successfully"}
 
+def run_fastapi():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
 # Run the FastAPI app
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
+    api_thread = threading.Thread(target=run_fastapi)
+    api_thread.start()
+
+    # Run the Telegram bot in the main thread
+    run_bot()

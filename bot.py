@@ -2,10 +2,10 @@ import os
 import cv2
 import sqlite3
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
 
 # Replace with your bot token
-BOT_TOKEN = Updater(os.getenv("BOT_TOKEN"))
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Database setup
 def init_db():
